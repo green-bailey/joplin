@@ -141,7 +141,7 @@ export default class SearchEngine {
 		// First delete content of note_normalized, in case the previous initial indexing failed
 		await this.db().exec('DELETE FROM notes_normalized');
 
-		while (noteIds.length) {
+		while (nodeIds.length) {
 			const currentIds = noteIds.splice(0, 100);
 			const notes = await Note.modelSelectAll(`
 				SELECT ${SearchEngine.relevantFields}
@@ -490,12 +490,11 @@ export default class SearchEngine {
 
 		const sortTerm = parsedQuery.allTerms.find(t => t.name === 'sort');
 		const sortAsc = sortTerm?.value?.endsWith('-asc');
-		let sortField: string | null = null;
-		if (sortTerm?.value?.startsWith('updated')) {
-			sortField = 'user_updated_time';
-		} else if (sortTerm?.value?.startsWith('created')) {
-			sortField = 'user_created_time';
-		}
+		const sortField = sortTerm?.value?.startsWith('updated')
+			? 'user_updated_time'
+			: sortTerm?.value?.startsWith('created')
+				? 'user_created_time'
+				: null;
 
 		if (sortField) {
 			rows.sort((a, b) => {
