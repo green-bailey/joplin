@@ -141,7 +141,7 @@ export default class SearchEngine {
 		// First delete content of note_normalized, in case the previous initial indexing failed
 		await this.db().exec('DELETE FROM notes_normalized');
 
-		while (nodeIds.length) {
+		while (noteIds.length) {
 			const currentIds = noteIds.splice(0, 100);
 			const notes = await Note.modelSelectAll(`
 				SELECT ${SearchEngine.relevantFields}
